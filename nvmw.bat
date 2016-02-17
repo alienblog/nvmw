@@ -97,6 +97,7 @@ if not "%2" == "" (
 
 set NODE_TYPE=node
 set NODE_VERSION=%1
+set LOW_VERSION=false
 
 :: nvmw install iojs-v1.0.2
 if "%NODE_VERSION:~4,1%" == "-" (
@@ -123,6 +124,10 @@ if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
 
+if %NODE_VERSION:~0,2% == v0 if not %NODE_VERSION:~0,1% == l (
+    set LOW_VERSION=true
+)
+
 if %NODE_TYPE% == iojs (
   set DIST_URL=%%
   if %ARCH% == x32 (
@@ -131,10 +136,19 @@ if %NODE_TYPE% == iojs (
     set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x64/iojs.exe
   )
 ) else (
+  echo %LOW_VERSION%
   if %ARCH% == x32 (
-    set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
+    if "%LOW_VERSION%" == "true" (
+      set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe    
+    ) else (
+      set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/win-x86/node.exe
+    )
   ) else (
-    set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
+    if "%LOW_VERSION%" == "true" (
+      set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe    
+    ) else (
+      set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/win-x64/node.exe
+    )
   )
 )
 
